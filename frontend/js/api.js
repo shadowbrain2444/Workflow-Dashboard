@@ -1,7 +1,7 @@
 /* Centralized API access layer for the Autonomous AI Workforce dashboard.
  * All backend communication flows through here - no page should call fetch() directly.
  */
-const API_BASE = "";
+const API_BASE = typeof DASHBOARD_API_BASE !== "undefined" ? DASHBOARD_API_BASE : "";
 
 async function apiRequest(method, path, { params, body } = {}) {
   let url = API_BASE + path;

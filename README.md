@@ -29,6 +29,25 @@ is fabricated).
 To reset all data, stop the server and delete `backend/workforce_dashboard.db`,
 then restart — it will reseed automatically.
 
+### Running frontend and backend as two separate servers
+
+By default the FastAPI app above serves both the API and the static frontend
+from one origin, so this is the setup most people want. If instead you serve
+`frontend/` with its own static server (e.g. a dev live-reload server on
+`:8080`) while `uvicorn` runs the API elsewhere (e.g. `:8000`), the frontend's
+`fetch()` calls need to be told where the backend actually is — otherwise
+`/api/...` resolves against the static server's own origin and 404s.
+
+Edit `frontend/js/config.js`:
+
+```js
+const DASHBOARD_API_BASE = "http://localhost:8000"; // your backend's origin
+```
+
+The backend already has CORS open (`allow_origins=["*"]`), so no other change
+is needed. Leave `DASHBOARD_API_BASE` as `""` (the default) for the normal
+single-server setup.
+
 ## Project layout
 
 ```
@@ -45,8 +64,9 @@ backend/
 frontend/
   index.html ... day7-completion.html   One HTML page per nav section
   css/          style.css, responsive.css
-  js/           api.js (fetch layer), app.js (shell/badges/toasts),
-                update-work.js (shared "Update Work" modal), one module per page
+  js/           config.js (backend API origin), api.js (fetch layer),
+                app.js (shell/badges/toasts), update-work.js (shared
+                "Update Work" modal), one module per page
   vendor/       Locally vendored Bootstrap 5, Bootstrap Icons, Chart.js
 ```
 
