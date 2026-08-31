@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>API Progress - Autonomous AI Workforce</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body data-page="api-progress">
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <main class="main-content">
+    <div class="topbar">
+      <div class="d-flex align-items-start gap-2">
+        <button class="btn btn-outline-soft mobile-toggle" id="mobileToggle"><i class="bi bi-list"></i></button>
+        <div>
+          <div class="page-title">API Progress</div>
+          <div class="page-subtitle">Implementation tracker for the API Ownership Map</div>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="openUpdateWorkModal()"><i class="bi bi-plus-lg me-1"></i>Update Work</button>
+    </div>
+
+    <div class="row g-3 mb-3" id="apiKpiRow"></div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label mb-1">Owner</label>
+            <select class="form-select form-select-sm" id="apiFOwner"><option value="">All developers</option></select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label mb-1">Category</label>
+            <select class="form-select form-select-sm" id="apiFCategory"><option value="">All categories</option></select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label mb-1">Status</label>
+            <select class="form-select form-select-sm" id="apiFStatus"><option value="">All statuses</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="apiProgressGroups"><div class="loading-state">Loading API catalog...</div></div>
+  </main>
+</div>
+
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/update-work.js"></script>
+<script src="js/app.js"></script>
+<script src="js/api-progress.js"></script>
+</body>
+</html>

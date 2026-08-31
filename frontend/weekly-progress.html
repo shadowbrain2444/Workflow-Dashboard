@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weekly Progress - Autonomous AI Workforce</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body data-page="weekly-progress">
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <main class="main-content">
+    <div class="topbar">
+      <div class="d-flex align-items-start gap-2">
+        <button class="btn btn-outline-soft mobile-toggle" id="mobileToggle"><i class="bi bi-list"></i></button>
+        <div>
+          <div class="page-title">Weekly Progress</div>
+          <div class="page-subtitle">Overall, team and day-by-day rollup for the 7-day build</div>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="openUpdateWorkModal()"><i class="bi bi-plus-lg me-1"></i>Update Work</button>
+    </div>
+
+    <div class="row g-3 mb-2" id="wpKpiRow">
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi-card skeleton" style="height:92px;"></div></div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="row g-4 mb-2">
+      <div class="col-lg-7">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="panel-title"><i class="bi bi-bar-chart-line me-2"></i>Daily Completion</div>
+            <canvas id="dailyChart" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="panel-title"><i class="bi bi-flag me-2"></i>Day-7 Readiness</div>
+            <div class="text-center py-2">
+              <div class="fw-bold" style="font-size:2.2rem;" id="wpDodPct">-</div>
+              <div class="text-muted-soft small mb-2" id="wpDodSub">-</div>
+              <div class="progress progress-lg">
+                <div class="progress-bar bg-success" id="wpDodBar" style="width:0%;"></div>
+              </div>
+              <a href="day7-completion.html" class="btn btn-sm btn-outline-soft mt-3">View Full Checklist</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="panel-title"><i class="bi bi-people me-2"></i>Team Progress</div>
+        <div id="wpTeam" class="row g-3"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="panel-title"><i class="bi bi-calendar-range me-2"></i>Daily Progress Detail</div>
+        <div class="table-responsive-wrapper">
+          <table class="table table-hover align-middle">
+            <thead><tr><th>Day</th><th>State</th><th>Completed</th><th>Pending</th><th>Blockers</th><th>Verified</th><th>Progress</th></tr></thead>
+            <tbody id="wpDailyBody"><tr><td colspan="7" class="loading-state">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="vendor/chartjs/chart.umd.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/update-work.js"></script>
+<script src="js/app.js"></script>
+<script src="js/weekly-progress.js"></script>
+</body>
+</html>

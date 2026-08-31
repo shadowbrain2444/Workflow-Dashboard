@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Activity - Autonomous AI Workforce</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body data-page="activity">
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <main class="main-content">
+    <div class="topbar">
+      <div class="d-flex align-items-start gap-2">
+        <button class="btn btn-outline-soft mobile-toggle" id="mobileToggle"><i class="bi bi-list"></i></button>
+        <div>
+          <div class="page-title">Activity</div>
+          <div class="page-subtitle">Real-time event feed - newest first</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge-status badge-running"><i class="bi bi-broadcast me-1"></i>Auto-refreshing</span>
+        <button class="btn btn-accent" onclick="openUpdateWorkModal()"><i class="bi bi-plus-lg me-1"></i>Update Work</button>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label mb-1">Event Type</label>
+            <select class="form-select form-select-sm" id="actFEventType"><option value="">All events</option></select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label mb-1">Developer</label>
+            <select class="form-select form-select-sm" id="actFDeveloper"><option value="">All</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div id="activityFeed"><div class="loading-state">Loading activity feed...</div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/update-work.js"></script>
+<script src="js/app.js"></script>
+<script src="js/activity.js"></script>
+</body>
+</html>

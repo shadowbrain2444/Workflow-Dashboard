@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard - Autonomous AI Workforce</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body data-page="dashboard">
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <main class="main-content">
+    <div class="topbar">
+      <div class="d-flex align-items-start gap-2">
+        <button class="btn btn-outline-soft mobile-toggle" id="mobileToggle"><i class="bi bi-list"></i></button>
+        <div>
+          <div class="page-title">AUTONOMOUS AI WORKFORCE</div>
+          <div class="page-subtitle">7-Day Development Progress</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="text-end">
+          <div class="fw-bold" id="hdrDay">Day - / 7</div>
+          <div class="text-muted-soft small" id="hdrDate">-</div>
+        </div>
+        <span class="badge-status badge-pending" id="hdrStatus">Loading...</span>
+        <button class="btn btn-accent" onclick="openUpdateWorkModal()"><i class="bi bi-plus-lg me-1"></i>Update Work</button>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-2" id="kpiRow">
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi-card skeleton" style="height:92px;"></div></div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 7-Day Progress -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="panel-title mb-0"><i class="bi bi-calendar-week me-2"></i>7-Day Progress</div>
+        </div>
+        <div class="row g-2" id="dayPillRow">
+          <div class="col loading-state">Loading day tracker...</div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div id="daySelectedPanel"></div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="panel-title"><i class="bi bi-exclamation-octagon me-2"></i>Open Blockers</div>
+            <div id="blockersList"><div class="loading-state">Loading...</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="panel-title"><i class="bi bi-activity me-2"></i>Recent Activity</div>
+            <div id="recentActivity"><div class="loading-state">Loading...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/update-work.js"></script>
+<script src="js/app.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

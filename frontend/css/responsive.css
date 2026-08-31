@@ -1,0 +1,50 @@
+@media (max-width: 991.98px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.5);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 1rem 1rem 3rem;
+  }
+
+  .mobile-toggle {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .kpi-value {
+    font-size: 1.5rem;
+  }
+
+  .page-title {
+    font-size: 1.15rem;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .day-pill {
+    padding: 0.5rem 0.3rem;
+  }
+}
+
+.table-responsive-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 1400px) {
+  .main-content {
+    padding-left: 2.25rem;
+    padding-right: 2.25rem;
+  }
+}

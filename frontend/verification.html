@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Verification &amp; Evidence - Autonomous AI Workforce</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body data-page="verification">
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <main class="main-content">
+    <div class="topbar">
+      <div class="d-flex align-items-start gap-2">
+        <button class="btn btn-outline-soft mobile-toggle" id="mobileToggle"><i class="bi bi-list"></i></button>
+        <div>
+          <div class="page-title">Verification &amp; Evidence</div>
+          <div class="page-subtitle">Objective proof behind every completed work item</div>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="openUpdateWorkModal()"><i class="bi bi-plus-lg me-1"></i>Update Work</button>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <div class="kpi-card">
+          <div class="d-flex justify-content-between align-items-start">
+            <div><div class="kpi-label">Passed</div><div class="kpi-value" id="vPassed">-</div></div>
+            <div class="kpi-icon" style="background-color:var(--success-soft);color:var(--success);"><i class="bi bi-check2-circle"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="kpi-card">
+          <div class="d-flex justify-content-between align-items-start">
+            <div><div class="kpi-label">Failed</div><div class="kpi-value" id="vFailed">-</div></div>
+            <div class="kpi-icon" style="background-color:var(--danger-soft);color:var(--danger);"><i class="bi bi-x-circle"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="kpi-card">
+          <div class="d-flex justify-content-between align-items-start">
+            <div><div class="kpi-label">Pending</div><div class="kpi-value" id="vPending">-</div></div>
+            <div class="kpi-icon" style="background-color:var(--warning-soft);color:var(--warning);"><i class="bi bi-hourglass-split"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label mb-1">Developer</label>
+            <select class="form-select form-select-sm" id="vFDeveloper"><option value="">All</option></select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label mb-1">Result</label>
+            <select class="form-select form-select-sm" id="vFPassed">
+              <option value="">All</option>
+              <option value="true">Passed</option>
+              <option value="false">Failed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive-wrapper">
+          <table class="table table-hover align-middle">
+            <thead><tr><th>ID</th><th>Work Item</th><th>Developer</th><th>Checks</th><th>Result</th><th>Timestamp</th><th></th></tr></thead>
+            <tbody id="verificationBody"><tr><td colspan="7" class="loading-state">Loading verifications...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="verificationDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Verification Detail</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="verificationDetailBody"></div>
+    </div>
+  </div>
+</div>
+
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/update-work.js"></script>
+<script src="js/app.js"></script>
+<script src="js/verification.js"></script>
+</body>
+</html>
