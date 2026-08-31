@@ -1,10 +1,47 @@
 /* Centralized API access layer for the Autonomous AI Workforce dashboard.
  * All backend communication flows through here - no page should call fetch() directly.
  */
-const API_BASE = typeof DASHBOARD_API_BASE !== "undefined" ? DASHBOARD_API_BASE : "";
+const CONFIGURED_API_BASE = typeof DASHBOARD_API_BASE !== "undefined" ? DASHBOARD_API_BASE : "";
+
+// Backend ports this app documents/defaults to (README "Running it"). Used only to
+// auto-discover the backend when the frontend is served by a separate static server
+// and DASHBOARD_API_BASE (frontend/js/config.js) was left at its default "" - so the
+// common local-dev split-server setup works with zero manual configuration.
+const AUTO_DISCOVER_PORTS = [8000, 8080, 5000, 3000];
+
+let _apiBasePromise = null;
+
+async function probeApiBase(base) {
+  try {
+    const res = await fetch(base + "/api/health", { cache: "no-store" });
+    return res.ok;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function resolveApiBase() {
+  if (CONFIGURED_API_BASE) return CONFIGURED_API_BASE; // explicit override always wins
+
+  if (await probeApiBase("")) return ""; // same-origin backend (the normal combined setup)
+
+  for (const port of AUTO_DISCOVER_PORTS) {
+    if (String(port) === window.location.port) continue; // that's the frontend's own port
+    const candidate = `${window.location.protocol}//${window.location.hostname}:${port}`;
+    if (await probeApiBase(candidate)) return candidate;
+  }
+
+  return ""; // couldn't find it; fall through to same-origin so errors are at least consistent
+}
+
+function getApiBase() {
+  if (!_apiBasePromise) _apiBasePromise = resolveApiBase();
+  return _apiBasePromise;
+}
 
 async function apiRequest(method, path, { params, body } = {}) {
-  let url = API_BASE + path;
+  const base = await getApiBase();
+  let url = base + path;
   if (params) {
     const qs = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {

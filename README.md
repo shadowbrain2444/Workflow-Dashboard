@@ -34,19 +34,22 @@ then restart — it will reseed automatically.
 By default the FastAPI app above serves both the API and the static frontend
 from one origin, so this is the setup most people want. If instead you serve
 `frontend/` with its own static server (e.g. a dev live-reload server on
-`:8080`) while `uvicorn` runs the API elsewhere (e.g. `:8000`), the frontend's
-`fetch()` calls need to be told where the backend actually is — otherwise
-`/api/...` resolves against the static server's own origin and 404s.
+`:8080`) while `uvicorn` runs the API elsewhere, **no configuration is
+needed in the common case**: `frontend/js/api.js` automatically probes
+`http://<same-hostname>:8000`, `:8080`, `:5000` and `:3000` (in that order)
+for a live backend and uses whichever one answers, the first time any page
+makes an API call. The backend already has CORS open (`allow_origins=["*"]`),
+so cross-origin calls work once the right port is found.
 
-Edit `frontend/js/config.js`:
+If your backend runs somewhere the auto-discovery won't find (a different
+host, or a port outside that list), set it explicitly in
+`frontend/js/config.js`:
 
 ```js
-const DASHBOARD_API_BASE = "http://localhost:8000"; // your backend's origin
+const DASHBOARD_API_BASE = "http://localhost:9001"; // your backend's origin
 ```
 
-The backend already has CORS open (`allow_origins=["*"]`), so no other change
-is needed. Leave `DASHBOARD_API_BASE` as `""` (the default) for the normal
-single-server setup.
+Leave `DASHBOARD_API_BASE` as `""` (the default) to use auto-discovery.
 
 ## Project layout
 
