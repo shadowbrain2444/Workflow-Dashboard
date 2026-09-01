@@ -1,0 +1,15 @@
+# Makes index.php act as a front controller under Apache (XAMPP/MAMP/WAMP),
+# whether this app is served from the domain root or nested under a
+# subdirectory (e.g. htdocs/Lordminds/Workflow-Dashboard/backend/public/).
+# Requires mod_rewrite (enabled by default in XAMPP).
+RewriteEngine On
+
+# If the request matches a real file (css/js/svg/woff/etc - not applicable
+# here since frontend/ lives outside this docroot, but harmless to keep),
+# serve it directly instead of going through PHP.
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Everything else - API calls and every frontend page/asset path - goes
+# through index.php, which resolves frontend/ files itself.
+RewriteRule ^ index.php [L]

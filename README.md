@@ -66,6 +66,28 @@ The seed script prints these on first run; they're listed here for convenience
 To reset all data, re-run `schema.sql` against a fresh database (or `TRUNCATE`
 every table) and re-run `seed.php`.
 
+### Running under Apache (XAMPP/MAMP/WAMP)
+
+**Never point Apache's docroot straight at `frontend/`** — that serves the
+static files directly and skips PHP entirely, so `/api/...` calls have
+nothing to answer them and every page hangs on "Loading...". `backend/public/`
+is the front controller: it handles the API *and* serves `frontend/` itself,
+so Apache must be pointed there instead.
+
+1. Enable `mod_rewrite` (on by default in XAMPP) — `backend/public/.htaccess`
+   uses it to route every request through `index.php`.
+2. Point your docroot or vhost at `backend/public/`. If the project lives
+   inside shared `htdocs` (e.g. `htdocs/Lordminds/Workflow-Dashboard/`), no
+   extra config is needed — the app auto-detects how deeply it's nested and
+   works from `http://localhost/Lordminds/Workflow-Dashboard/backend/public/`.
+3. Set the `DB_*` environment variables for Apache's PHP process (e.g. in
+   `php.ini`'s `[PHP]` section as `env[DB_HOST] = ...`, or an `.htaccess`
+   `SetEnv` line), or just edit the defaults in `backend/config/database.php`.
+4. XAMPP ships MySQL/MariaDB, not PostgreSQL — this app needs a real
+   PostgreSQL server (`pdo_pgsql` extension) reachable from Apache's PHP;
+   install/start PostgreSQL separately and run the schema/seed steps above
+   against it.
+
 ## Project layout
 
 ```
@@ -79,8 +101,11 @@ backend/
                                ApiProgress, Verification, Issue, Activity,
                                DefinitionOfDone, WeeklyProgress, Meta, UserManagement
   routes/api.php                Route table mapping method+path to a controller action
-  public/index.php                 Front controller: sessions, CORS, API dispatch,
-                                    static frontend file serving
+  public/index.php, .htaccess       Front controller: sessions, CORS, API dispatch,
+                                     static frontend file serving. Auto-detects
+                                     its own mount path so it works both at the
+                                     domain root (php -S) and nested under a
+                                     subdirectory (Apache/XAMPP htdocs).
   database/schema.sql, seed.php     PostgreSQL schema and seed data (from the spec PDF)
 frontend/
   login.html, index.html, my-work.html, team-progress.html, work-items.html,

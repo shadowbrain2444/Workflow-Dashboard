@@ -30,7 +30,34 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
     exit;
 }
 
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+// --- Base path detection --------------------------------------------------
+// Under `php -S ... backend/public/index.php` the app is mounted at the
+// domain root, so there's nothing to strip. Under Apache/XAMPP the docroot
+// is usually shared htdocs and this app lives in a subdirectory (e.g.
+// /Lordminds/Workflow-Dashboard/backend/public/), which .htaccess routes
+// through this same index.php.
+//
+// SCRIPT_NAME is NOT reliable for this: PHP's built-in server sets it to
+// the *requested path* when a router script handles the request (not the
+// router's own location), so dirname(SCRIPT_NAME) is meaningless there.
+// SCRIPT_FILENAME, by contrast, is always this script's real filesystem
+// path under both php -S and Apache - diffing it against DOCUMENT_ROOT
+// gives the true URL prefix this app is mounted under, regardless of what
+// was requested.
+$documentRoot = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
+$scriptFileDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_FILENAME'] ?? __FILE__));
+$basePath = ($documentRoot !== '' && str_starts_with($scriptFileDir, $documentRoot))
+    ? substr($scriptFileDir, strlen($documentRoot))
+    : '';
+$basePath = rtrim($basePath, '/');
+
+$rawPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$path = $basePath !== '' && str_starts_with($rawPath, $basePath)
+    ? substr($rawPath, strlen($basePath))
+    : $rawPath;
+if ($path === '') {
+    $path = '/';
+}
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if (str_starts_with($path, '/api/')) {

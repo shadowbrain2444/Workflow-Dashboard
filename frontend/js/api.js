@@ -4,9 +4,10 @@
  * backend can authenticate and authorize it.
  */
 const API_BASE = typeof DASHBOARD_API_BASE !== "undefined" ? DASHBOARD_API_BASE : "";
+const BASE_PATH_PREFIX = API_BASE ? "" : (typeof APP_BASE_PATH !== "undefined" ? APP_BASE_PATH : "");
 
 async function apiRequest(method, path, { params, body } = {}) {
-  let url = API_BASE + path;
+  let url = API_BASE + BASE_PATH_PREFIX + path;
   if (params) {
     const qs = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {
