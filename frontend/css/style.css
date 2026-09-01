@@ -1,24 +1,41 @@
 :root {
-  --bg: #0f1419;
-  --bg-elevated: #161c24;
-  --bg-card: #1a212b;
-  --bg-hover: #212a36;
-  --border-color: #2a3441;
-  --text-primary: #e6edf3;
-  --text-secondary: #9aa8b8;
-  --text-muted: #6b7885;
-  --accent: #3b82f6;
-  --accent-soft: rgba(59, 130, 246, 0.15);
-  --success: #22c55e;
-  --success-soft: rgba(34, 197, 94, 0.15);
-  --warning: #f59e0b;
-  --warning-soft: rgba(245, 158, 11, 0.15);
-  --danger: #ef4444;
-  --danger-soft: rgba(239, 68, 68, 0.15);
-  --info: #06b6d4;
-  --info-soft: rgba(6, 182, 212, 0.15);
-  --purple: #a855f7;
-  --purple-soft: rgba(168, 85, 247, 0.15);
+  /* Brand palette - the ONLY three hues used anywhere in this app.
+   * Every other value below is an alpha/tint variant of one of these three. */
+  --color-black: #000000;
+  --color-maroon: #6D001A;
+  --color-white: #FFFFFF;
+
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-elevated: #000000;
+  --bg-card: #000000;
+  --bg-hover: rgba(109, 0, 26, 0.16);
+
+  --border-color: #6D001A;
+  --border-subtle: rgba(255, 255, 255, 0.14);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-muted: rgba(255, 255, 255, 0.52);
+
+  --accent: #6D001A;
+  --accent-hover: #8a0021;
+  --accent-soft: rgba(109, 0, 26, 0.22);
+
+  /* Semantic roles below all resolve to maroon or white (never a new hue) -
+   * alternating the two lets KPI/badge families stay visually distinguishable
+   * while staying strictly inside the brand palette. */
+  --success: #6D001A;
+  --success-soft: rgba(109, 0, 26, 0.24);
+  --info: #FFFFFF;
+  --info-soft: rgba(255, 255, 255, 0.12);
+  --warning: #FFFFFF;
+  --warning-soft: rgba(255, 255, 255, 0.07);
+  --danger: #6D001A;
+  --danger-soft: rgba(109, 0, 26, 0.40);
+  --purple: #FFFFFF;
+  --purple-soft: rgba(255, 255, 255, 0.16);
+
   --sidebar-width: 250px;
 }
 
@@ -27,15 +44,33 @@
 }
 
 html, body {
-  background-color: var(--bg);
+  background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
 }
 
 a {
-  color: var(--accent);
+  color: var(--text-primary);
   text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-white);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+}
+
+.alert-link {
+  color: var(--color-white);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  font-weight: 700;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--color-white);
 }
 
 /* ---------- Layout ---------- */
@@ -46,7 +81,7 @@ a {
 
 .sidebar {
   width: var(--sidebar-width);
-  background-color: var(--bg-elevated);
+  background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
   position: fixed;
   top: 0;
@@ -113,18 +148,20 @@ a {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .sidebar-nav .nav-link:hover {
-  background-color: var(--bg-hover);
-  color: var(--text-primary);
+  background-color: var(--accent);
+  color: var(--color-white);
 }
 
 .sidebar-nav .nav-link.active {
-  background-color: var(--accent-soft);
-  color: #93c5fd;
-  font-weight: 600;
+  background-color: var(--accent);
+  color: var(--color-white);
+  border-color: var(--color-white);
+  font-weight: 700;
 }
 
 .sidebar-nav .nav-link i {
@@ -185,6 +222,10 @@ a {
   font-size: 0.9rem;
 }
 
+.card-footer {
+  border-top: 1px solid var(--border-color) !important;
+}
+
 .panel-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -224,6 +265,7 @@ a {
   align-items: center;
   justify-content: center;
   font-size: 1rem;
+  border: 1px solid var(--border-subtle);
 }
 
 /* ---------- Badges ---------- */
@@ -237,33 +279,62 @@ a {
   display: inline-block;
 }
 
-.badge-pending { background-color: var(--warning-soft); color: var(--warning); border-color: rgba(245,158,11,0.3); }
-.badge-running { background-color: var(--info-soft); color: var(--info); border-color: rgba(6,182,212,0.3); }
-.badge-verifying { background-color: var(--purple-soft); color: var(--purple); border-color: rgba(168,85,247,0.3); }
-.badge-completed { background-color: var(--success-soft); color: var(--success); border-color: rgba(34,197,94,0.3); }
-.badge-failed { background-color: var(--danger-soft); color: var(--danger); border-color: rgba(239,68,68,0.3); }
-.badge-cancelled { background-color: rgba(148,163,184,0.15); color: #94a3b8; border-color: rgba(148,163,184,0.3); }
-.badge-passed { background-color: var(--success-soft); color: var(--success); border-color: rgba(34,197,94,0.3); }
-.badge-notstarted { background-color: rgba(148,163,184,0.15); color: #94a3b8; border-color: rgba(148,163,184,0.3); }
-.badge-inprogress { background-color: var(--info-soft); color: var(--info); border-color: rgba(6,182,212,0.3); }
-.badge-implemented { background-color: var(--success-soft); color: var(--success); border-color: rgba(34,197,94,0.3); }
-.badge-verified { background-color: var(--purple-soft); color: var(--purple); border-color: rgba(168,85,247,0.3); }
-.badge-blocked { background-color: var(--danger-soft); color: var(--danger); border-color: rgba(239,68,68,0.3); }
-.badge-open { background-color: var(--danger-soft); color: var(--danger); border-color: rgba(239,68,68,0.3); }
-.badge-resolved { background-color: var(--success-soft); color: var(--success); border-color: rgba(34,197,94,0.3); }
-.badge-critical, .badge-high { background-color: var(--danger-soft); color: var(--danger); }
-.badge-medium { background-color: var(--warning-soft); color: var(--warning); }
-.badge-low { background-color: rgba(148,163,184,0.15); color: #94a3b8; }
+/* Strong positive: solid maroon fill */
+.badge-completed, .badge-passed, .badge-implemented, .badge-resolved {
+  background-color: var(--accent);
+  color: var(--color-white);
+  border-color: var(--accent);
+}
+
+/* Verified: solid maroon + white ring - the strongest positive signal */
+.badge-verified {
+  background-color: var(--accent);
+  color: var(--color-white);
+  border-color: var(--color-white);
+}
+
+/* Active / in-progress: maroon tint, maroon border */
+.badge-running, .badge-inprogress, .badge-verifying, .badge-medium {
+  background-color: rgba(109, 0, 26, 0.28);
+  color: var(--color-white);
+  border-color: var(--accent);
+}
+
+/* Neutral / waiting: transparent, maroon outline only */
+.badge-pending, .badge-notstarted, .badge-open, .badge-low {
+  background-color: transparent;
+  color: var(--color-white);
+  border-color: var(--accent);
+}
+
+/* Inactive: subtle white tint */
+.badge-cancelled {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  border-color: var(--border-subtle);
+}
+
+/* Negative: solid maroon + bold white ring - visually the strongest treatment */
+.badge-failed, .badge-blocked, .badge-critical, .badge-high {
+  background-color: var(--accent);
+  color: var(--color-white);
+  border: 2px solid var(--color-white);
+}
 
 /* ---------- Progress bars ---------- */
 .progress {
-  background-color: #0d1117;
+  background-color: var(--color-black);
+  border: 1px solid rgba(109, 0, 26, 0.45);
   border-radius: 6px;
   height: 8px;
 }
 
 .progress-lg {
   height: 12px;
+}
+
+.progress-bar {
+  background-color: var(--accent) !important;
 }
 
 /* ---------- 7-day tracker ---------- */
@@ -279,12 +350,12 @@ a {
 }
 
 .day-pill:hover {
-  border-color: var(--accent);
+  border-color: var(--color-white);
   transform: translateY(-2px);
 }
 
 .day-pill.active {
-  border-color: var(--accent);
+  border-color: var(--color-white);
   background-color: var(--accent-soft);
 }
 
@@ -301,8 +372,8 @@ a {
   margin-top: 6px;
 }
 
-.dot-completed { background-color: var(--success); }
-.dot-current { background-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.dot-completed { background-color: var(--accent); }
+.dot-current { background-color: var(--color-white); box-shadow: 0 0 0 4px var(--accent-soft); }
 .dot-upcoming { background-color: var(--text-muted); }
 
 /* ---------- Tables ---------- */
@@ -322,11 +393,12 @@ a {
 }
 
 .table thead th {
-  color: var(--text-muted);
+  background-color: var(--accent);
+  color: var(--color-white);
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  border-bottom-color: var(--border-color);
+  border-bottom-color: var(--accent);
   font-weight: 700;
 }
 
@@ -340,7 +412,7 @@ a {
 .form-control:focus, .form-select:focus {
   background-color: var(--bg-elevated);
   color: var(--text-primary);
-  border-color: var(--accent);
+  border-color: var(--color-white);
   box-shadow: 0 0 0 0.2rem var(--accent-soft);
 }
 
@@ -356,6 +428,17 @@ a {
 
 .form-select option {
   background-color: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.form-check-input {
+  background-color: var(--bg-elevated);
+  border-color: var(--border-color);
+}
+
+.form-check-input:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ---------- Modal ---------- */
@@ -373,25 +456,28 @@ a {
 .btn-accent {
   background-color: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--color-white);
   font-weight: 600;
 }
 
-.btn-accent:hover {
-  background-color: #2563eb;
-  border-color: #2563eb;
-  color: #fff;
+.btn-accent:hover,
+.btn-accent:focus {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: var(--color-white);
+  filter: brightness(1.1);
 }
 
 .btn-outline-soft {
   border-color: var(--border-color);
   color: var(--text-secondary);
+  background-color: transparent;
 }
 
 .btn-outline-soft:hover {
-  background-color: var(--bg-hover);
-  color: var(--text-primary);
-  border-color: var(--border-color);
+  background-color: var(--accent);
+  color: var(--color-white);
+  border-color: var(--accent);
 }
 
 /* ---------- Developer cards ---------- */
@@ -404,7 +490,8 @@ a {
   justify-content: center;
   font-weight: 800;
   font-size: 1.2rem;
-  color: #fff;
+  color: var(--color-white);
+  border: 1px solid var(--border-subtle);
 }
 
 .metric-tile {
@@ -418,6 +505,7 @@ a {
 .metric-tile .metric-value {
   font-weight: 700;
   font-size: 1.05rem;
+  color: var(--text-primary);
 }
 
 .metric-tile .metric-label {
@@ -449,13 +537,13 @@ a {
 }
 
 .arch-node:hover {
-  border-color: var(--accent);
+  border-color: var(--color-white);
   background-color: var(--bg-hover);
 }
 
 .arch-arrow {
   text-align: center;
-  color: var(--text-muted);
+  color: var(--accent);
   font-size: 1.3rem;
   line-height: 1;
   margin: 0.15rem 0;
@@ -464,6 +552,7 @@ a {
 .arch-node .arch-module {
   font-weight: 700;
   font-size: 0.85rem;
+  color: var(--text-primary);
 }
 
 .arch-node .arch-owner {
@@ -493,6 +582,7 @@ a {
   justify-content: center;
   flex-shrink: 0;
   font-size: 0.85rem;
+  border: 1px solid var(--border-subtle);
 }
 
 .activity-event {
@@ -525,6 +615,7 @@ a {
   font-size: 2rem;
   margin-bottom: 0.5rem;
   display: block;
+  color: var(--accent);
 }
 
 .loading-state {
@@ -534,10 +625,11 @@ a {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-hover) 37%, var(--bg-elevated) 63%);
+  background: linear-gradient(90deg, #000000 25%, rgba(109, 0, 26, 0.35) 37%, #000000 63%);
   background-size: 400% 100%;
   animation: skeleton-loading 1.4s ease infinite;
   border-radius: 6px;
+  border: 1px solid var(--border-subtle);
 }
 
 @keyframes skeleton-loading {
@@ -548,6 +640,14 @@ a {
 .toast-container {
   z-index: 1080;
 }
+
+.toast {
+  background-color: var(--color-black);
+  border: 1px solid var(--border-color);
+  color: var(--color-white);
+}
+
+.toast.toast-brand-danger { border-color: var(--color-white); }
 
 .status-select-inline {
   font-size: 0.78rem;
@@ -572,3 +672,86 @@ pre.evidence-block {
   max-height: 220px;
   overflow-y: auto;
 }
+
+/* ---------- Bootstrap component overrides ---------- */
+.alert {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.alert-danger {
+  background-color: var(--danger-soft);
+  border-color: var(--color-white);
+  color: var(--color-white);
+}
+
+.alert-info {
+  background-color: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--color-white);
+}
+
+.text-bg-secondary {
+  background-color: transparent !important;
+  border: 1px solid var(--border-color);
+  color: var(--color-white) !important;
+}
+
+.dropdown-menu {
+  background-color: var(--color-black);
+  border: 1px solid var(--border-color);
+}
+
+.dropdown-item {
+  color: var(--text-primary);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+  background-color: var(--accent);
+  color: var(--color-white);
+}
+
+.pagination .page-link {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.pagination .page-link:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--color-white);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--color-white);
+}
+
+.pagination .page-item.disabled .page-link {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+
+.spinner-border {
+  color: var(--color-white);
+}
+
+code {
+  color: var(--color-white);
+  background-color: rgba(109, 0, 26, 0.15);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+/* Bootstrap text-color utilities (bi icons, small stats) - remapped onto the
+ * brand palette instead of Bootstrap's default green/cyan/amber/red. */
+.text-success { color: var(--accent) !important; }
+.text-info { color: var(--color-white) !important; }
+.text-warning { color: var(--color-white) !important; }
+.text-danger { color: var(--accent) !important; font-weight: 700; }
+.text-muted { color: var(--text-muted) !important; }

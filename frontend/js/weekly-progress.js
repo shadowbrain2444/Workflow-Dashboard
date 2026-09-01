@@ -70,8 +70,8 @@ function renderDaily(daily) {
   const chartData = {
     labels: daily.map((d) => d.label),
     datasets: [
-      { label: "Completed", data: daily.map((d) => d.completed), backgroundColor: "#22c55e" },
-      { label: "Remaining", data: daily.map((d) => d.total - d.completed), backgroundColor: "#2a3441" },
+      { label: "Completed", data: daily.map((d) => d.completed), backgroundColor: "#6D001A" },
+      { label: "Remaining", data: daily.map((d) => d.total - d.completed), backgroundColor: "rgba(255,255,255,0.10)" },
     ],
   };
   if (_dailyChart) {
@@ -85,10 +85,10 @@ function renderDaily(daily) {
     options: {
       responsive: true,
       scales: {
-        x: { stacked: true, ticks: { color: "#9aa8b8" }, grid: { color: "#2a3441" } },
-        y: { stacked: true, ticks: { color: "#9aa8b8", precision: 0 }, grid: { color: "#2a3441" } },
+        x: { stacked: true, ticks: { color: "rgba(255,255,255,0.65)" }, grid: { color: "rgba(109,0,26,0.35)" } },
+        y: { stacked: true, ticks: { color: "rgba(255,255,255,0.65)", precision: 0 }, grid: { color: "rgba(109,0,26,0.35)" } },
       },
-      plugins: { legend: { labels: { color: "#e6edf3" } } },
+      plugins: { legend: { labels: { color: "#FFFFFF" } } },
     },
   });
 }

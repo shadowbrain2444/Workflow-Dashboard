@@ -31,7 +31,7 @@ function renderApiKpis(items) {
   });
   const defs = [
     { label: "Total APIs", value: items.length, color: "var(--accent)", bg: "var(--accent-soft)", icon: "bi-hdd-network" },
-    { label: "Not Started", value: counts["Not Started"], color: "#94a3b8", bg: "rgba(148,163,184,0.15)", icon: "bi-dash-circle" },
+    { label: "Not Started", value: counts["Not Started"], color: "rgba(255,255,255,0.55)", bg: "rgba(255,255,255,0.06)", icon: "bi-dash-circle" },
     { label: "In Progress", value: counts["In Progress"], color: "var(--info)", bg: "var(--info-soft)", icon: "bi-arrow-repeat" },
     { label: "Implemented", value: counts["Implemented"], color: "var(--success)", bg: "var(--success-soft)", icon: "bi-check2-circle" },
     { label: "Verified", value: counts["Verified"], color: "var(--purple)", bg: "var(--purple-soft)", icon: "bi-patch-check" },

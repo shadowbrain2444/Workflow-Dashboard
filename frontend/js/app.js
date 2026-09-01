@@ -17,14 +17,10 @@ const ADMIN_NAV_ITEMS = [
   { page: "user-management", label: "User Management", href: "user-management.html", icon: "bi-person-gear" },
 ];
 
-const DEVELOPER_COLORS = {
-  Bharath: "#3b82f6",
-  Dhanuja: "#a855f7",
-  Anshif: "#06b6d4",
-};
-
-function developerColor(name) {
-  return DEVELOPER_COLORS[name] || "#64748b";
+function developerColor() {
+  // All developer avatars share the one brand accent - black/maroon/white
+  // is the whole palette, so per-developer hues are not available.
+  return "#6D001A";
 }
 
 function developerInitials(name) {
@@ -54,7 +50,7 @@ function renderShell() {
         <div class="brand-sub">7-Day Development Progress Dashboard</div>
       </div>
       <div class="sidebar-user">
-        <div class="developer-avatar" style="width:34px;height:34px;font-size:0.8rem;background-color:${user.role === "admin" ? "#64748b" : developerColor(user.developer_name)};">
+        <div class="developer-avatar" style="width:34px;height:34px;font-size:0.8rem;background-color:${user.role === "admin" ? "#000000" : developerColor()};border:1px solid ${user.role === "admin" ? "#FFFFFF" : "rgba(255,255,255,0.14)"};color:${user.role === "admin" ? "#6D001A" : "#FFFFFF"};">
           ${user.role === "admin" ? '<i class="bi bi-shield-lock"></i>' : developerInitials(user.developer_name)}
         </div>
         <div class="flex-grow-1 min-w-0">
@@ -214,9 +210,8 @@ function showToast(message, type = "success") {
     document.body.appendChild(host);
   }
   const icon = type === "success" ? "bi-check-circle-fill" : type === "danger" ? "bi-x-circle-fill" : "bi-info-circle-fill";
-  const bg = type === "success" ? "text-bg-success" : type === "danger" ? "text-bg-danger" : "text-bg-primary";
   const el = document.createElement("div");
-  el.className = `toast align-items-center ${bg} border-0`;
+  el.className = `toast align-items-center ${type === "danger" ? "toast-brand-danger" : ""}`;
   el.setAttribute("role", "alert");
   el.innerHTML = `<div class="d-flex">
     <div class="toast-body"><i class="bi ${icon} me-2"></i>${escapeHtml(message)}</div>
