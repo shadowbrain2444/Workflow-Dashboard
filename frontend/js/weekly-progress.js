@@ -99,5 +99,5 @@ function renderDodPanel(data) {
   document.getElementById("wpDodBar").style.width = `${data.day7_readiness}%`;
 }
 
-document.addEventListener("DOMContentLoaded", loadWeeklyProgress);
+document.addEventListener("auth:ready", loadWeeklyProgress);
 document.addEventListener("workitem:saved", loadWeeklyProgress);

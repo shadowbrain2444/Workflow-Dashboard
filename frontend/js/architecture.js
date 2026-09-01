@@ -99,5 +99,5 @@ async function loadArchitecture() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadArchitecture);
+document.addEventListener("auth:ready", loadArchitecture);
 document.addEventListener("workitem:saved", loadArchitecture);

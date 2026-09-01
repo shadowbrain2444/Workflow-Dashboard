@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>User Management - Autonomous AI Workforce</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body data-page="user-management">
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <main class="main-content">
+    <div class="topbar">
+      <div class="d-flex align-items-start gap-2">
+        <button class="btn btn-outline-soft mobile-toggle" id="mobileToggle"><i class="bi bi-list"></i></button>
+        <div>
+          <div class="page-title">User Management</div>
+          <div class="page-subtitle">Admin only - manage login accounts for the team</div>
+        </div>
+      </div>
+      <button class="btn btn-accent" id="addUserBtn"><i class="bi bi-person-plus me-1"></i>Add User</button>
+    </div>
+
+    <div id="forbiddenNotice" class="alert alert-danger d-none" role="alert">
+      <i class="bi bi-shield-exclamation me-2"></i>Admin access required. Redirecting...
+    </div>
+
+    <div class="card" id="usersCard">
+      <div class="card-body">
+        <div class="table-responsive-wrapper">
+          <table class="table table-hover align-middle">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Developer</th><th>Status</th><th>Created</th><th></th></tr></thead>
+            <tbody id="usersBody"><tr><td colspan="7" class="loading-state">Loading users...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="addUserForm" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Add User</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="addUserAlert" class="alert alert-danger d-none" role="alert"></div>
+          <div class="mb-3">
+            <label class="form-label">Name *</label>
+            <input class="form-control" id="auName" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-control" id="auEmail" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password *</label>
+            <input type="password" class="form-control" id="auPassword" required minlength="8" />
+            <div class="form-text text-muted-soft">At least 8 characters.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Role *</label>
+            <select class="form-select" id="auRole" required>
+              <option value="developer">Developer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="mb-3" id="auDeveloperWrap">
+            <label class="form-label">Developer *</label>
+            <select class="form-select" id="auDeveloper" required>
+              <option value="">Select developer...</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-soft" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-accent" id="auSaveBtn"><i class="bi bi-save me-1"></i>Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="resetPasswordForm" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-key me-2"></i>Reset Password</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="resetPasswordAlert" class="alert alert-danger d-none" role="alert"></div>
+          <input type="hidden" id="rpUserId" />
+          <label class="form-label">New Password *</label>
+          <input type="password" class="form-control" id="rpPassword" required minlength="8" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-soft" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-accent"><i class="bi bi-save me-1"></i>Set Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/update-work.js"></script>
+<script src="js/app.js"></script>
+<script src="js/user-management.js"></script>
+</body>
+</html>

@@ -117,7 +117,7 @@ async function loadApiProgress() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("auth:ready", async () => {
   await initApiFilters();
   await loadApiProgress();
 });

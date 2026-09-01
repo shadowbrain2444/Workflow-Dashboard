@@ -2,14 +2,19 @@
 
 const NAV_ITEMS = [
   { page: "dashboard", label: "Dashboard", href: "index.html", icon: "bi-speedometer2" },
+  { page: "my-work", label: "My Work", href: "my-work.html", icon: "bi-person-workspace" },
+  { page: "team-progress", label: "Team Progress", href: "team-progress.html", icon: "bi-people" },
   { page: "weekly-progress", label: "Weekly Progress", href: "weekly-progress.html", icon: "bi-graph-up" },
-  { page: "team", label: "Team", href: "team.html", icon: "bi-people" },
   { page: "work-items", label: "Work Items", href: "work-items.html", icon: "bi-list-task" },
   { page: "architecture", label: "Architecture", href: "architecture.html", icon: "bi-diagram-3" },
   { page: "api-progress", label: "API Progress", href: "api-progress.html", icon: "bi-hdd-network" },
   { page: "verification", label: "Verification & Evidence", href: "verification.html", icon: "bi-patch-check" },
   { page: "activity", label: "Activity", href: "activity.html", icon: "bi-activity" },
   { page: "day7-completion", label: "Day-7 Completion", href: "day7-completion.html", icon: "bi-flag" },
+];
+
+const ADMIN_NAV_ITEMS = [
+  { page: "user-management", label: "User Management", href: "user-management.html", icon: "bi-person-gear" },
 ];
 
 const DEVELOPER_COLORS = {
@@ -32,17 +37,33 @@ function renderShell() {
   const root = document.getElementById("sidebar-root");
   if (!root) return;
 
-  const navHtml = NAV_ITEMS.map((item) => `
+  const items = isAdmin() ? [...NAV_ITEMS, ...ADMIN_NAV_ITEMS] : NAV_ITEMS;
+  const navHtml = items.map((item) => `
     <a class="nav-link ${item.page === activePage ? "active" : ""}" href="${item.href}">
       <i class="bi ${item.icon}"></i><span>${item.label}</span>
     </a>
   `).join("");
+
+  const user = CURRENT_USER || {};
+  const roleLabel = user.role === "admin" ? "Admin" : (user.developer_name || user.name || "");
 
   root.innerHTML = `
     <div class="sidebar" id="appSidebar">
       <div class="sidebar-brand">
         <div class="brand-title">AUTONOMOUS AI<br/>WORKFORCE</div>
         <div class="brand-sub">7-Day Development Progress Dashboard</div>
+      </div>
+      <div class="sidebar-user">
+        <div class="developer-avatar" style="width:34px;height:34px;font-size:0.8rem;background-color:${user.role === "admin" ? "#64748b" : developerColor(user.developer_name)};">
+          ${user.role === "admin" ? '<i class="bi bi-shield-lock"></i>' : developerInitials(user.developer_name)}
+        </div>
+        <div class="flex-grow-1 min-w-0">
+          <div class="sidebar-user-name text-truncate">${escapeHtml(user.name || "")}</div>
+          <div class="sidebar-user-role">${escapeHtml(roleLabel)}</div>
+        </div>
+        <button class="btn btn-sm btn-outline-soft" id="sidebarLogoutBtn" title="Log out">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
       </div>
       <nav class="sidebar-nav">
         ${navHtml}
@@ -57,6 +78,8 @@ function renderShell() {
 
   const btn = document.getElementById("sidebarUpdateWorkBtn");
   if (btn) btn.addEventListener("click", () => openUpdateWorkModal());
+  const logoutBtn = document.getElementById("sidebarLogoutBtn");
+  if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
 }
 
 function initMobileToggle() {
@@ -206,11 +229,17 @@ function showToast(message, type = "success") {
 }
 
 /* ---------- Init ---------- */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  if (document.body.getAttribute("data-page") === "login") return; // auth.js handles this page
+
+  const user = await guardAuth();
+  if (!user) return; // guardAuth already redirected to login.html
+
   renderShell();
   initMobileToggle();
   if (typeof renderUpdateWorkModal === "function") {
     renderUpdateWorkModal();
     initUpdateWorkModal();
   }
+  document.dispatchEvent(new CustomEvent("auth:ready", { detail: user }));
 });

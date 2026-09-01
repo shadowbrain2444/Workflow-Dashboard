@@ -1,47 +1,12 @@
 /* Centralized API access layer for the Autonomous AI Workforce dashboard.
  * All backend communication flows through here - no page should call fetch() directly.
+ * Every request carries the PHP session cookie (credentials: "include") so the
+ * backend can authenticate and authorize it.
  */
-const CONFIGURED_API_BASE = typeof DASHBOARD_API_BASE !== "undefined" ? DASHBOARD_API_BASE : "";
-
-// Backend ports this app documents/defaults to (README "Running it"). Used only to
-// auto-discover the backend when the frontend is served by a separate static server
-// and DASHBOARD_API_BASE (frontend/js/config.js) was left at its default "" - so the
-// common local-dev split-server setup works with zero manual configuration.
-const AUTO_DISCOVER_PORTS = [8000, 8080, 5000, 3000];
-
-let _apiBasePromise = null;
-
-async function probeApiBase(base) {
-  try {
-    const res = await fetch(base + "/api/health", { cache: "no-store" });
-    return res.ok;
-  } catch (_) {
-    return false;
-  }
-}
-
-async function resolveApiBase() {
-  if (CONFIGURED_API_BASE) return CONFIGURED_API_BASE; // explicit override always wins
-
-  if (await probeApiBase("")) return ""; // same-origin backend (the normal combined setup)
-
-  for (const port of AUTO_DISCOVER_PORTS) {
-    if (String(port) === window.location.port) continue; // that's the frontend's own port
-    const candidate = `${window.location.protocol}//${window.location.hostname}:${port}`;
-    if (await probeApiBase(candidate)) return candidate;
-  }
-
-  return ""; // couldn't find it; fall through to same-origin so errors are at least consistent
-}
-
-function getApiBase() {
-  if (!_apiBasePromise) _apiBasePromise = resolveApiBase();
-  return _apiBasePromise;
-}
+const API_BASE = typeof DASHBOARD_API_BASE !== "undefined" ? DASHBOARD_API_BASE : "";
 
 async function apiRequest(method, path, { params, body } = {}) {
-  const base = await getApiBase();
-  let url = base + path;
+  let url = API_BASE + path;
   if (params) {
     const qs = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {
@@ -55,6 +20,7 @@ async function apiRequest(method, path, { params, body } = {}) {
   try {
     res = await fetch(url, {
       method,
+      credentials: "include",
       headers: body ? { "Content-Type": "application/json" } : undefined,
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -62,17 +28,24 @@ async function apiRequest(method, path, { params, body } = {}) {
     throw new Error("Network error: unable to reach the backend API. Is the server running?");
   }
 
+  if (res.status === 401) {
+    if (!location.pathname.endsWith("login.html")) {
+      window.location.href = "login.html";
+    }
+    throw new Error("Session expired. Please log in again.");
+  }
+
   if (!res.ok) {
     let detail = `Request failed (${res.status})`;
     try {
       const errJson = await res.json();
       if (errJson.detail) {
-        detail = typeof errJson.detail === "string"
-          ? errJson.detail
-          : errJson.detail.map((d) => d.msg || JSON.stringify(d)).join("; ");
+        detail = Array.isArray(errJson.detail) ? errJson.detail.join("; ") : errJson.detail;
       }
     } catch (_) { /* no json body */ }
-    throw new Error(detail);
+    const err = new Error(detail);
+    err.status = res.status;
+    throw err;
   }
 
   if (res.status === 204) return null;
@@ -80,6 +53,10 @@ async function apiRequest(method, path, { params, body } = {}) {
 }
 
 const Api = {
+  login: (email, password) => apiRequest("POST", "/api/auth/login", { body: { email, password } }),
+  logout: () => apiRequest("POST", "/api/auth/logout"),
+  me: () => apiRequest("GET", "/api/auth/me"),
+
   getSummary: () => apiRequest("GET", "/api/dashboard/summary"),
   getDailyProgress: () => apiRequest("GET", "/api/dashboard/daily-progress"),
   getDeveloperProgress: () => apiRequest("GET", "/api/dashboard/developer-progress"),
@@ -96,7 +73,6 @@ const Api = {
   getApiProgress: (params) => apiRequest("GET", "/api/api-progress", { params }),
 
   getVerifications: (params) => apiRequest("GET", "/api/verification", { params }),
-  getVerification: (id) => apiRequest("GET", `/api/verification/${id}`),
 
   getIssues: (params) => apiRequest("GET", "/api/issues", { params }),
   updateIssue: (id, body) => apiRequest("PUT", `/api/issues/${id}`, { body }),
@@ -109,4 +85,9 @@ const Api = {
   getWeeklyProgress: () => apiRequest("GET", "/api/weekly-progress"),
 
   getMeta: () => apiRequest("GET", "/api/meta"),
+
+  getUsers: () => apiRequest("GET", "/api/users"),
+  createUser: (body) => apiRequest("POST", "/api/users", { body }),
+  setUserActive: (id, isActive) => apiRequest("PUT", `/api/users/${id}/active`, { body: { is_active: isActive } }),
+  setUserPassword: (id, password) => apiRequest("PUT", `/api/users/${id}/password`, { body: { password } }),
 };

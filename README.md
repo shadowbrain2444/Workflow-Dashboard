@@ -1,87 +1,109 @@
 # Autonomous AI Workforce — 7-Day Development Progress Dashboard
 
-A database-backed dashboard for tracking the work of the three-person team
-(**Bharath**, **Dhanuja**, **Anshif**) building the Autonomous AI Workforce
+A role-based, database-backed dashboard for tracking the work of the three-person
+team (**Bharath**, **Dhanuja**, **Anshif**) building the Autonomous AI Workforce
 system over its 7-day implementation, per
 `Autonomous_AI_Workforce_7_Day_API_Architecture_3_Developers.pdf`.
 
-- **Frontend:** HTML5 + CSS3 + Bootstrap 5 + vanilla JavaScript (no frameworks). Bootstrap,
-  Bootstrap Icons and Chart.js are vendored locally under `frontend/vendor/` — no CDN
-  dependency at runtime.
-- **Backend:** FastAPI + Pydantic + SQLAlchemy, serving a REST API and the static frontend.
-- **Database:** SQLite (`backend/workforce_dashboard.db`, created and seeded automatically
-  on first run).
+- **Frontend:** HTML5 + CSS3 + Bootstrap 5 + vanilla JavaScript (no frameworks).
+  Bootstrap, Bootstrap Icons and Chart.js are vendored locally under
+  `frontend/vendor/` — no CDN dependency at runtime.
+- **Backend:** PHP (OOP) with a small hand-rolled router/controller/model/
+  middleware structure, PDO prepared statements throughout.
+- **Database:** PostgreSQL.
+- **Auth:** PHP sessions, `password_hash()`/`password_verify()` — no plain-text
+  passwords anywhere.
+
+## Role-based access control
+
+Two roles: **admin** (sees and can edit everything, manages user accounts) and
+**developer** (tied to exactly one of Bharath/Dhanuja/Anshif via `developer_id`).
+A developer can view the whole team's progress but can only create, edit, or
+delete **their own** work items, verification-triggering fields, blockers, and
+Day-7 requirements assigned to them. This is enforced **server-side on every
+request** (`backend/middleware/OwnershipMiddleware.php`) — the frontend hiding
+Edit buttons is a UX nicety, not the security boundary. A hand-crafted API call
+from one developer trying to modify another's data gets a `403` regardless of
+what the UI would have allowed.
 
 ## Running it
 
+Requires PHP with the `pdo_pgsql` extension and a running PostgreSQL server.
+
 ```bash
-cd backend
-pip install -r requirements.txt
-python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+# 1. Create the database (adjust user/db names to taste)
+createuser workforce_app --pwprompt   # or: psql -c "CREATE USER workforce_app WITH PASSWORD '...';"
+createdb workforce_dashboard --owner workforce_app
+
+# 2. Load the schema
+psql -U workforce_app -d workforce_dashboard -f backend/database/schema.sql
+
+# 3. Seed developers, user accounts, the API catalog and Day-7 requirements
+DB_HOST=127.0.0.1 DB_NAME=workforce_dashboard DB_USER=workforce_app DB_PASSWORD=your_password \
+  php backend/database/seed.php
+
+# 4. Run the app (serves both the API and the frontend on one port)
+DB_HOST=127.0.0.1 DB_NAME=workforce_dashboard DB_USER=workforce_app DB_PASSWORD=your_password \
+  php -S 0.0.0.0:8000 backend/public/index.php
 ```
 
-Open **http://localhost:8000** in a browser. The database is created and seeded
-automatically on first startup (3 developers, their 7-day deliverables as Pending
-work items, the full API ownership catalog, and the 14 Day-7 Definition of Done
-requirements — all derived from the spec PDF, seeded as *not yet done* so nothing
-is fabricated).
+Open **http://localhost:8000** — you'll land on the login page. The `DB_*`
+environment variables default to `127.0.0.1:5432 / workforce_dashboard /
+workforce_app / workforce_dev_pw` if unset (see `backend/config/database.php`).
 
-To reset all data, stop the server and delete `backend/workforce_dashboard.db`,
-then restart — it will reseed automatically.
+### Seeded login credentials
 
-### Running frontend and backend as two separate servers
+The seed script prints these on first run; they're listed here for convenience
+— **change them before any real deployment**:
 
-By default the FastAPI app above serves both the API and the static frontend
-from one origin, so this is the setup most people want. If instead you serve
-`frontend/` with its own static server (e.g. a dev live-reload server on
-`:8080`) while `uvicorn` runs the API elsewhere, **no configuration is
-needed in the common case**: `frontend/js/api.js` automatically probes
-`http://<same-hostname>:8000`, `:8080`, `:5000` and `:3000` (in that order)
-for a live backend and uses whichever one answers, the first time any page
-makes an API call. The backend already has CORS open (`allow_origins=["*"]`),
-so cross-origin calls work once the right port is found.
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@workforce.local` | `Admin@12345` |
+| Bharath (developer) | `bharath@workforce.local` | `Bharath@123` |
+| Dhanuja (developer) | `dhanuja@workforce.local` | `Dhanuja@123` |
+| Anshif (developer) | `anshif@workforce.local` | `Anshif@123` |
 
-If your backend runs somewhere the auto-discovery won't find (a different
-host, or a port outside that list), set it explicitly in
-`frontend/js/config.js`:
-
-```js
-const DASHBOARD_API_BASE = "http://localhost:9001"; // your backend's origin
-```
-
-Leave `DASHBOARD_API_BASE` as `""` (the default) to use auto-discovery.
+To reset all data, re-run `schema.sql` against a fresh database (or `TRUNCATE`
+every table) and re-run `seed.php`.
 
 ## Project layout
 
 ```
 backend/
-  app/
-    main.py          FastAPI app, static frontend mount
-    models.py         SQLAlchemy models
-    schemas.py         Pydantic request/response schemas
-    seed.py             Seed data derived from the spec PDF
-    stats.py             Dashboard aggregation logic (KPIs, daily/weekly progress)
-    routers/                One router per resource (dashboard, work-items, developers,
-                             api-progress, verification, issues, activities,
-                             definition-of-done, weekly-progress, meta)
+  config/database.php     PDO connection factory (env-driven)
+  models/                  One class per table - PDO prepared statements only
+  services/                AuthService (login/session), ProgressService (KPI/progress aggregation)
+  middleware/               AuthMiddleware (401), RoleMiddleware (admin-only 403),
+                             OwnershipMiddleware (per-resource 403 + developer_id enforcement)
+  controllers/                One per resource - Auth, Dashboard, Developer, WorkItem,
+                               ApiProgress, Verification, Issue, Activity,
+                               DefinitionOfDone, WeeklyProgress, Meta, UserManagement
+  routes/api.php                Route table mapping method+path to a controller action
+  public/index.php                 Front controller: sessions, CORS, API dispatch,
+                                    static frontend file serving
+  database/schema.sql, seed.php     PostgreSQL schema and seed data (from the spec PDF)
 frontend/
-  index.html ... day7-completion.html   One HTML page per nav section
+  login.html, index.html, my-work.html, team-progress.html, work-items.html,
+  architecture.html, api-progress.html, verification.html, activity.html,
+  day7-completion.html, weekly-progress.html, user-management.html (admin only)
   css/          style.css, responsive.css
-  js/           config.js (backend API origin), api.js (fetch layer),
-                app.js (shell/badges/toasts), update-work.js (shared
-                "Update Work" modal), one module per page
+  js/           config.js (API base override), api.js (fetch layer, session cookies),
+                auth.js (session guard + login page logic), app.js (RBAC-aware shell,
+                badges, toasts), update-work.js (shared "Update Work" modal - Developer
+                field is locked to your own name unless you're an admin), one module per page
   vendor/       Locally vendored Bootstrap 5, Bootstrap Icons, Chart.js
 ```
 
 ## Dashboard pages
 
-Dashboard · Weekly Progress · Team · Work Items · Architecture · API Progress ·
-Verification & Evidence · Activity · Day-7 Completion — plus the global
-**+ Update Work** action available from every page, which is the single write
-path for logging or editing a developer's work (creates/updates the work item,
-syncs linked API statuses, records a verification entry when work is marked
-Passed/Failed, opens a blocker issue when Issues/Blockers is filled in, and logs
-an activity event).
+Dashboard (team overview) · My Work (your own log, full CRUD) · Team Progress
+(everyone's progress - only your own card is editable) · Weekly Progress ·
+Work Items (full team table, Edit only on rows you own) · Architecture ·
+API Progress · Verification & Evidence · Activity · Day-7 Completion (edit
+only the 14 requirements assigned to you) · User Management (admin only) —
+plus the global **+ Update Work** action, the single write path for logging
+or editing work, with the Developer field locked to your own name unless
+you're an admin.
 
 All figures (KPIs, day-by-day progress, developer stats, API progress, Day-7
-completion %) are computed live from the database — nothing is hard-coded.
+completion %) are computed live from PostgreSQL — nothing is hard-coded.

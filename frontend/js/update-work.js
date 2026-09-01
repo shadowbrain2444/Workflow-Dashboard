@@ -157,6 +157,23 @@ function resetUpdateWorkForm() {
   document.getElementById("updateWorkAlert").classList.add("d-none");
   Array.from(document.getElementById("uwApis").options).forEach((o) => (o.selected = false));
   _editingId = null;
+  applyDeveloperFieldLock();
+}
+
+/* A developer account can only ever log/edit their own work - the Developer
+ * field is locked to their own name so there's no illusion of choice, even
+ * though the backend is the real enforcement (it ignores/rejects any other
+ * developer_id from a non-admin request regardless of what the UI sends). */
+function applyDeveloperFieldLock() {
+  const devSel = document.getElementById("uwDeveloper");
+  if (isAdmin()) {
+    devSel.disabled = false;
+    return;
+  }
+  if (CURRENT_USER && CURRENT_USER.developer_id) {
+    devSel.value = String(CURRENT_USER.developer_id);
+  }
+  devSel.disabled = true;
 }
 
 function openUpdateWorkModal(workItem) {

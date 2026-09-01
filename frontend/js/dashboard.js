@@ -149,7 +149,7 @@ async function loadBlockers() {
             <td>${escapeHtml(i.module)}</td>
             <td>${priorityBadge(i.priority)}</td>
             <td>${issueStatusBadge(i.status)}</td>
-            <td><button class="btn btn-sm btn-outline-soft" onclick="resolveBlocker(${i.id})">Resolve</button></td>
+            <td>${ownsResource(i.developer_id) ? `<button class="btn btn-sm btn-outline-soft" onclick="resolveBlocker(${i.id})">Resolve</button>` : ""}</td>
           </tr>`).join("")}
       </tbody>
     </table></div>`;
@@ -203,5 +203,5 @@ async function loadRecentActivity() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadDashboard);
+document.addEventListener("auth:ready", loadDashboard);
 document.addEventListener("workitem:saved", loadDashboard);

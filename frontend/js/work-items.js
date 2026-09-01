@@ -113,7 +113,7 @@ async function loadWorkItems() {
         <td class="small text-muted-soft">${timeAgo(i.updated_at)}</td>
         <td class="text-nowrap">
           <button class="btn btn-sm btn-outline-soft" onclick="viewWorkItem(${i.id})"><i class="bi bi-eye"></i></button>
-          <button class="btn btn-sm btn-outline-soft" onclick="editWorkItem(${i.id})"><i class="bi bi-pencil"></i></button>
+          ${ownsResource(i.developer_id) ? `<button class="btn btn-sm btn-outline-soft" onclick="editWorkItem(${i.id})"><i class="bi bi-pencil"></i></button>` : ""}
         </td>
       </tr>`;
     }).join("");
@@ -164,10 +164,16 @@ function viewWorkItem(id) {
       <div class="col-md-6"><div class="small text-muted-soft">Updated</div><div class="small">${formatDateTime(i.updated_at)}</div></div>
     </div>
   `;
-  document.getElementById("viewWorkItemEditBtn").onclick = () => {
-    bootstrap.Modal.getOrCreateInstance(document.getElementById("viewWorkItemModal")).hide();
-    editWorkItem(id);
-  };
+  const editBtn = document.getElementById("viewWorkItemEditBtn");
+  if (ownsResource(i.developer_id)) {
+    editBtn.classList.remove("d-none");
+    editBtn.onclick = () => {
+      bootstrap.Modal.getOrCreateInstance(document.getElementById("viewWorkItemModal")).hide();
+      editWorkItem(id);
+    };
+  } else {
+    editBtn.classList.add("d-none");
+  }
   bootstrap.Modal.getOrCreateInstance(document.getElementById("viewWorkItemModal")).show();
 }
 
@@ -180,7 +186,7 @@ function editWorkItem(id) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("auth:ready", async () => {
   await initFilters();
   await loadWorkItems();
 });

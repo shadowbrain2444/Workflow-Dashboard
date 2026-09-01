@@ -65,7 +65,7 @@ function viewVerification(id) {
   bootstrap.Modal.getOrCreateInstance(document.getElementById("verificationDetailModal")).show();
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("auth:ready", async () => {
   await initVerificationFilters();
   await loadVerifications();
 });

@@ -93,7 +93,7 @@ async function loadActivity() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("auth:ready", async () => {
   await initActivityFilters();
   await loadActivity();
   _activityTimer = setInterval(loadActivity, 20000);

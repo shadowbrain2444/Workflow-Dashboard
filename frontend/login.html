@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign In - Autonomous AI Workforce</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body data-page="login" class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
+<div class="w-100" style="max-width:400px;">
+  <div class="text-center mb-4">
+    <div class="fw-bold" style="letter-spacing:0.06em;font-size:1.05rem;">AUTONOMOUS AI WORKFORCE</div>
+    <div class="text-muted-soft small">7-Day Development Progress Dashboard</div>
+  </div>
+  <div class="card">
+    <div class="card-body p-4">
+      <h5 class="mb-3"><i class="bi bi-shield-lock me-2"></i>Sign In</h5>
+      <div id="loginAlert" class="alert alert-danger d-none" role="alert"></div>
+      <form id="loginForm" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" id="loginEmail" required autocomplete="username" placeholder="you@workforce.local" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="loginPassword" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn btn-accent w-100" id="loginSubmitBtn">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="text-center text-muted-soft small mt-3">
+    Autonomous AI Workforce &middot; Bharath &middot; Dhanuja &middot; Anshif
+  </div>
+</div>
+
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

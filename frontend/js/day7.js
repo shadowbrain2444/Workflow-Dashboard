@@ -1,5 +1,10 @@
 let _dodCache = {};
 
+function canEditDod(item) {
+  if (isAdmin()) return true;
+  return item.owner_developer_id !== null && item.owner_developer_id === CURRENT_USER.developer_id;
+}
+
 async function loadDay7() {
   const list = document.getElementById("dodList");
   try {
@@ -17,7 +22,9 @@ async function loadDay7() {
       `${items.filter((i) => i.status === "Blocked").length} blocked, ` +
       `${items.filter((i) => i.status === "Not Started").length} not started`;
 
-    list.innerHTML = items.map((item, idx) => `
+    list.innerHTML = items.map((item, idx) => {
+      const editable = canEditDod(item);
+      return `
       <div class="card mb-2">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
@@ -26,34 +33,37 @@ async function loadDay7() {
               <div>
                 <div class="fw-semibold">${escapeHtml(item.requirement)}</div>
                 <div class="small text-muted-soft mt-1">
-                  <i class="bi bi-person"></i> ${escapeHtml(item.owner)}
+                  <i class="bi bi-person"></i> ${escapeHtml(item.owner_label)}
                   <span class="ms-2"><i class="bi bi-clock-history"></i> ${timeAgo(item.updated_at)}</span>
+                  ${!editable ? '<span class="ms-2"><i class="bi bi-lock"></i> read-only</span>' : ""}
                 </div>
               </div>
             </div>
             <div class="d-flex align-items-center gap-2">
-              ${dodStatusBadge(item.status)}
-              <select class="form-select form-select-sm status-select-inline" style="width:auto;" onchange="updateDodStatus(${item.id}, this.value)">
-                ${["Not Started", "In Progress", "Verified", "Blocked"].map((s) => `<option value="${s}" ${s === item.status ? "selected" : ""}>${s}</option>`).join("")}
-              </select>
+              ${editable
+                ? `<select class="form-select form-select-sm status-select-inline" style="width:auto;" onchange="updateDodStatus(${item.id}, this.value)">
+                     ${["Not Started", "In Progress", "Verified", "Blocked"].map((s) => `<option value="${s}" ${s === item.status ? "selected" : ""}>${s}</option>`).join("")}
+                   </select>`
+                : dodStatusBadge(item.status)}
             </div>
           </div>
           <div class="row g-2 mt-2">
             <div class="col-md-6">
               <label class="form-label mb-1 small">Evidence</label>
-              <textarea class="form-control form-control-sm" rows="2" id="dodEvidence${item.id}">${escapeHtml(item.evidence)}</textarea>
+              <textarea class="form-control form-control-sm" rows="2" id="dodEvidence${item.id}" ${editable ? "" : "disabled"}>${escapeHtml(item.evidence)}</textarea>
             </div>
             <div class="col-md-6">
               <label class="form-label mb-1 small">Notes</label>
-              <textarea class="form-control form-control-sm" rows="2" id="dodNotes${item.id}">${escapeHtml(item.notes)}</textarea>
+              <textarea class="form-control form-control-sm" rows="2" id="dodNotes${item.id}" ${editable ? "" : "disabled"}>${escapeHtml(item.notes)}</textarea>
             </div>
           </div>
+          ${editable ? `
           <div class="d-flex justify-content-end mt-2">
             <button class="btn btn-sm btn-outline-soft" onclick="saveDodDetails(${item.id})"><i class="bi bi-save me-1"></i>Save Evidence &amp; Notes</button>
-          </div>
+          </div>` : ""}
         </div>
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
   } catch (err) {
     renderError(list, err.message);
   }
@@ -81,5 +91,5 @@ async function saveDodDetails(id) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadDay7);
+document.addEventListener("auth:ready", loadDay7);
 document.addEventListener("workitem:saved", loadDay7);
