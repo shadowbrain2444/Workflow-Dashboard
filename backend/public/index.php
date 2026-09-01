@@ -2,6 +2,53 @@
 
 declare(strict_types=1);
 
+// --- Error visibility ------------------------------------------------------
+// This is a local development tool, not a public-facing production service,
+// so we surface real error detail instead of a bare 500 - a blank 500 with
+// nothing in the browser or the `php -S` console (which is exactly what a
+// silently-missing extension like pdo_pgsql produces) is undebuggable.
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
+set_exception_handler(function (Throwable $e): void {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'error' => 'Internal Server Error',
+        'detail' => $e->getMessage(),
+        'type' => get_class($e),
+        'file' => $e->getFile() . ':' . $e->getLine(),
+    ]);
+});
+
+register_shutdown_function(function (): void {
+    $error = error_get_last();
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+        if (!headers_sent()) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+        }
+        echo json_encode([
+            'error' => 'Internal Server Error',
+            'detail' => $error['message'],
+            'file' => $error['file'] . ':' . $error['line'],
+        ]);
+    }
+});
+
+if (!extension_loaded('pdo_pgsql')) {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'error' => 'Missing PHP extension',
+        'detail' => 'The pdo_pgsql extension is not loaded. On XAMPP: edit php.ini '
+            . '(find it with `php --ini`), uncomment (remove the leading ";" from) '
+            . 'both "extension=pdo_pgsql" and "extension=pgsql", then restart php -S. '
+            . 'Run `php -m` to confirm pdo_pgsql appears in the list.',
+    ]);
+    exit;
+}
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../routes/api.php';
 require_once __DIR__ . '/../helpers/Http.php';
