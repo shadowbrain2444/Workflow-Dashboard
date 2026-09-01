@@ -30,26 +30,71 @@ what the UI would have allowed.
 
 Requires PHP with the `pdo_pgsql` extension and a running PostgreSQL server.
 
+The `DB_*` environment variables default to `127.0.0.1:5432 /
+workforce_dashboard / workforce_app / workforce_dev_pw` if unset (see
+`backend/config/database.php`) — **easiest path: create your local Postgres
+role with that exact password** so you never need to set anything:
+
 ```bash
-# 1. Create the database (adjust user/db names to taste)
-createuser workforce_app --pwprompt   # or: psql -c "CREATE USER workforce_app WITH PASSWORD '...';"
+# 1. Create the database (using the documented default password)
+createuser workforce_app --pwprompt   # enter workforce_dev_pw when prompted
 createdb workforce_dashboard --owner workforce_app
 
 # 2. Load the schema
 psql -U workforce_app -d workforce_dashboard -f backend/database/schema.sql
 
 # 3. Seed developers, user accounts, the API catalog and Day-7 requirements
-DB_HOST=127.0.0.1 DB_NAME=workforce_dashboard DB_USER=workforce_app DB_PASSWORD=your_password \
-  php backend/database/seed.php
+php backend/database/seed.php
 
 # 4. Run the app (serves both the API and the frontend on one port)
+php -S 0.0.0.0:8000 backend/public/index.php
+```
+
+If you'd rather use your own password, override the defaults via environment
+variables — but **the syntax is shell-specific**, so pick the block that
+matches your terminal (mixing them up is a common source of a silent
+fallback to the wrong default password, which surfaces as `password
+authentication failed` from PostgreSQL):
+
+<details>
+<summary>macOS/Linux (bash/zsh)</summary>
+
+```bash
+DB_HOST=127.0.0.1 DB_NAME=workforce_dashboard DB_USER=workforce_app DB_PASSWORD=your_password \
+  php backend/database/seed.php
 DB_HOST=127.0.0.1 DB_NAME=workforce_dashboard DB_USER=workforce_app DB_PASSWORD=your_password \
   php -S 0.0.0.0:8000 backend/public/index.php
 ```
+</details>
 
-Open **http://localhost:8000** — you'll land on the login page. The `DB_*`
-environment variables default to `127.0.0.1:5432 / workforce_dashboard /
-workforce_app / workforce_dev_pw` if unset (see `backend/config/database.php`).
+<details>
+<summary>Windows cmd.exe (e.g. a plain XAMPP shell)</summary>
+
+`VAR=value command` is **not valid syntax in cmd.exe** — it silently fails
+to set the variable rather than erroring, so the app falls back to its
+default password. Use `set` instead:
+
+```bat
+set DB_HOST=127.0.0.1
+set DB_NAME=workforce_dashboard
+set DB_USER=workforce_app
+set DB_PASSWORD=your_password
+php backend\database\seed.php
+php -S 0.0.0.0:8000 backend/public/index.php
+```
+</details>
+
+<details>
+<summary>Windows PowerShell</summary>
+
+```powershell
+$env:DB_HOST="127.0.0.1"; $env:DB_NAME="workforce_dashboard"; $env:DB_USER="workforce_app"; $env:DB_PASSWORD="your_password"
+php backend\database\seed.php
+php -S 0.0.0.0:8000 backend/public/index.php
+```
+</details>
+
+Open **http://localhost:8000** — you'll land on the login page.
 
 ### Seeded login credentials
 
